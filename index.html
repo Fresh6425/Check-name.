@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบเช็คชื่อ</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .container { margin-top: 20px; }
+        input, select, button { padding: 10px; margin: 5px; }
+        #result { font-size: 18px; font-weight: bold; margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>ระบบเช็คชื่อ</h1>
+    <div class="container">
+        <label for="year">เลือกชั้นปี:</label>
+        <select id="year">
+            <option value="ปี 1">ปี 1</option>
+            <option value="ปี 2">ปี 2</option>
+            <option value="ปี 3">ปี 3</option>
+            <option value="ปี 4">ปี 4</option>
+        </select>
+        
+        <label for="room">เลือกห้อง:</label>
+        <select id="room">
+            <option value="">เลือกห้อง</option>
+        </select>
+
+        <label for="student-id">กรอกรหัสนักเรียน:</label>
+        <input type="text" id="student-id" placeholder="กรอกรหัสนักเรียน">
+
+        <button onclick="checkAttendance()">เช็คชื่อ</button>
+        <p id="result"></p>
+    </div>
+
+    <script>
+        // ข้อมูลเช็คชื่อ
+        const attendanceData = {
+            "ปี 1": {
+                "301": ["027", "028"],
+                "302": ["029", "050"],
+                "304": ["030", "031", "035", "037"],
+                "305": ["038", "039"],
+                "309/2": ["042"],
+                "310": ["043"],
+                "311": ["044"],
+                "312": ["045"],
+                "315": ["046", "047"],
+                "316": ["049", "048", "041", "051"],
+                "318": ["052", "053"]
+            },
+            "ปี 2": {
+                "307": ["015", "104"],
+                "309/1": ["106", "107"],
+                "309/2": ["134", "139"],
+                "314": ["122"],
+                "312": ["136", "137", "138"],
+                "313": ["002", "023", "025", "028"],
+                "315": ["108", "109"]
+            },
+            "ปี 3": {
+                "301": ["53", "55"],
+                "302": ["61", "78"],
+                "303": ["63", "62", "64", "65"],
+                "305": ["131", "57"],
+                "306": ["58"],
+                "308": ["76", "79", "77"],
+                "309/2": ["122"],
+                "310": ["66", "69", "132"],
+                "314": ["71", "72", "75"],
+                "317": ["80", "82", "83", "84"],
+                "318": ["85", "86"]
+            },
+            "ปี 4": {
+                "319": ["02", "06", "26", "103"],
+                "306": ["25", "19", "32"],
+                "307": ["17", "43"],
+                "309/1": ["125", "80"],
+                "311": ["85", "93", "97"]
+            }
+        };
+
+        // อัปเดตรายการห้องเรียนตามชั้นปีที่เลือก
+        document.getElementById("year").addEventListener("change", function() {
+            let selectedYear = this.value;
+            let roomSelect = document.getElementById("room");
+            roomSelect.innerHTML = '<option value="">เลือกห้อง</option>';
+            
+            if (selectedYear in attendanceData) {
+                Object.keys(attendanceData[selectedYear]).forEach(room => {
+                    let option = document.createElement("option");
+                    option.value = room;
+                    option.textContent = room;
+                    roomSelect.appendChild(option);
+                });
+            }
+        });
+
+        // ฟังก์ชันเช็คชื่อ
+        function checkAttendance() {
+            let year = document.getElementById("year").value;
+            let room = document.getElementById("room").value;
+            let studentID = document.getElementById("student-id").value.trim();
+            let result = document.getElementById("result");
+
+            if (!room || !studentID) {
+                result.innerHTML = "⚠️ กรุณาเลือกห้องและกรอกรหัสนักเรียน";
+                result.style.color = "orange";
+                return;
+            }
+
+            if (attendanceData[year] && attendanceData[year][room]) {
+                if (attendanceData[year][room].includes(studentID)) {
+                    result.innerHTML = "✔ นักเรียนอยู่ในระบบ";
+                    result.style.color = "green";
+                } else {
+                    result.innerHTML = "❌ ไม่พบนักเรียนในห้องนี้";
+                    result.style.color = "red";
+                }
+            } else {
+                result.innerHTML = "❌ ไม่พบข้อมูลห้องเรียน";
+                result.style.color = "red";
+            }
+        }
+    </script>
+</body>
+</html>
